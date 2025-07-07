@@ -68,16 +68,17 @@ async def proxy_stream(request: Request):
     return Response(status_code=500, content=b"All streaming keys failed")
 
 # Tuỳ chọn: Trả về mô hình giả (cho tool test thấy model)
-@app.get("/models")
-def fake_model_list():
+@app.get("/v1/models")
+def list_models_openai_style():
     return {
-        "models": [
+        "data": [
             {
                 "id": "gemini-2.5-pro",
                 "object": "model",
-                "description": "Gemini Pro 2.5 with chat, stream, vision",
+                "created": 1720000000,
                 "owned_by": "google",
-                "permissions": [{"allow_fine_tuning": False}]
+                "permission": [],
             }
-        ]
+        ],
+        "object": "list"
     }
