@@ -52,3 +52,16 @@ async def proxy_stream(request: Request):
             print(f"[{name}] Streaming error: {e}")
             continue
     return Response(status_code=500, content=b"All streaming keys failed")
+
+@app.get("/models")
+def list_models():
+    return {
+        "models": [
+            {
+                "id": "gemini-2.5-pro",
+                "object": "model",
+                "owned_by": "google",
+                "capabilities": ["chat", "vision", "streaming", "json"]
+            }
+        ]
+    }
