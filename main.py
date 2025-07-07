@@ -85,3 +85,57 @@ def list_models_openai_style():
 @app.get("/models")
 def compat_models():
     return list_models_openai_style()
+@app.post("/v1/chat/completions")
+async def openai_compatible_chat(request: Request):
+    body = await request.json()
+
+    # Chuyển đổi OpenAI-style sang Gemini-style
+    messages = body.get("messages", [])
+    contents = []
+    for m in messages:
+        role = m.get("role", "user")
+        content = m.get("content", "")
+        parts = [{"text": content}] if isinstance(content, str) else content
+        contents.append({"role": role, "parts": parts})
+
+    gemini_body = { "contents": contents }
+
+    # Gửi sang Gemini như cũ
+    for name, key in random.sample(GEMINI_KEYS.items(), len(GEMINI_KEYS)):
+        try:
+            url = f"{BASE_URL}:generateContent"
+            async with httpx.AsyncClient(timeout=60) as client:
+                res = await client.post(
+                    url,
+                    json=gemini_body,
+                    headers={
+                        "Content-Type": "application/json",
+                        "X-Goog-Api-Key": key
+                    }
+                )
+                if res.status_code == 200:
+                    gemini_res = res.json()
+                    text = gemini_res.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                    return {
+                        "id": "chatcmpl-fakeid",
+                        "object": "chat.completion",
+                        "choices": [{
+                            "index": 0,
+                            "message": {"role": "assistant", "content": text},
+                            "finish_reason": "stop"
+                        }],
+                        "created": 1720000000,
+                        "model": MODEL,
+                        "usage": {
+                            "prompt_tokens": 0,
+                            "completion_tokens": 0,
+                            "total_tokens": 0
+                        }
+                    }
+                else:
+                    print(f"[{name}] Status {res.status_code}: {res.text}")
+        except Exception as e:
+            print(f"[{name}] Error: {e}")
+            continue
+
+    return Response(status_code=500, content=b"All API keys failed.")
