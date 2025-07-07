@@ -82,3 +82,6 @@ def list_models_openai_style():
         ],
         "object": "list"
     }
+@app.get("/models")
+def compat_models():
+    return list_models_openai_style()
