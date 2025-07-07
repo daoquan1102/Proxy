@@ -14,7 +14,7 @@ for i in range(1, 37):
         GEMINI_KEYS[env_key] = api_key
 
 MODEL = "gemini-2.5-pro"
-BASE_URL = f"https://generativelanguage.googleapis.com/v1/models/{MODEL}"
+BASE_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}"
 
 # === Proxy chat thường ===
 @app.post("/v1/gemini/chat")
