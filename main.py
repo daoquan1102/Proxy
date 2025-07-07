@@ -47,7 +47,7 @@ async def proxy_chat(request: Request):
 async def proxy_stream(request: Request):
     body = await request.body()
 
-    for name, key in random.sample(GEMINI_KEYS.items(), len(GEMINI_KEYS)):
+    for name, key in random.sample(list(GEMINI_KEYS.items()), len(GEMINI_KEYS)):
         try:
             url = f"{BASE_URL}:streamGenerateContent"
             async with httpx.AsyncClient(timeout=None) as client:
@@ -101,7 +101,7 @@ async def openai_compatible_chat(request: Request):
     gemini_body = { "contents": contents }
 
     # Gửi sang Gemini như cũ
-    for name, key in random.sample(GEMINI_KEYS.items(), len(GEMINI_KEYS)):
+    for name, key in random.sample(list(GEMINI_KEYS.items()), len(GEMINI_KEYS)):
         try:
             url = f"{BASE_URL}:generateContent"
             async with httpx.AsyncClient(timeout=60) as client:
