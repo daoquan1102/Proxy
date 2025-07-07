@@ -21,7 +21,7 @@ async def proxy_chat(request: Request):
     body = await request.body()
     
     # Duyệt ngẫu nhiên qua các key
-    for name, key in random.sample(GEMINI_KEYS.items(), len(GEMINI_KEYS)):
+    for name, key in random.sample(list(GEMINI_KEYS.items()), len(GEMINI_KEYS)):
         try:
             url = f"{BASE_URL}:generateContent"
             async with httpx.AsyncClient(timeout=60) as client:
